@@ -196,7 +196,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LoginModal from '../Auth/LoginModal';
 import RegisterModal from '../Auth/RegisterModal';
-
+// import Booking from './Page/Booking/Booking';
 const Header = ({ isLoggedIn, isAdmin, onLogout, onLogin }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -217,9 +217,14 @@ const Header = ({ isLoggedIn, isAdmin, onLogout, onLogin }) => {
                 <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                   Accueil
                 </Link>
-                <Link to="/booking" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/rooms" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                   Chambres
                 </Link>
+
+
+                {/* <Link to="/booking/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                  Chambres
+                </Link> */}
                 {isAdmin && (
                   <Link to="/admin" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                     Admin

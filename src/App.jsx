@@ -57,7 +57,8 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import AdminRooms from './pages/Admin/Rooms';
 import AdminBookings from './pages/Admin/Bookings';
 import AdminUsers from './pages/Admin/Users';
-import BookingPage from './pages/Booking/Booking';
+import Booking from './pages/Booking/Booking';
+import Rooms from './pages/Rooms';
 import './App.css'
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -82,7 +83,8 @@ const App = () => {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home isLoggedIn={isLoggedIn} onLogin={handleLogin} />} />
-            <Route path="/booking" element={<BookingPage isLoggedIn={isLoggedIn} />} />
+             <Route path="/rooms" element={<Rooms />} />
+            <Route path="/booking" element={<Booking isLoggedIn={isLoggedIn} />} />
             
             {/* Routes Admin */}
             <Route 
