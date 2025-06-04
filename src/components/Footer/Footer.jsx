@@ -40,15 +40,15 @@ const Footer = () => {
             <ul className="space-y-2 text-gray-400">
               <li className="flex items-start">
                 <i className="fas fa-map-marker-alt mt-1 mr-2"></i>
-                <span>123 Avenue des Champs-Élysées, 75008 Paris, France</span>
+                <span>Sassandra,cote d'ivoire</span>
               </li>
               <li className="flex items-center">
                 <i className="fas fa-phone-alt mr-2"></i>
-                <span>+33 1 23 45 67 89</span>
+                <span>+225 05 05 66 50 89</span>
               </li>
               <li className="flex items-center">
                 <i className="fas fa-envelope mr-2"></i>
-                <span>contact@hotelbooking.fr</span>
+                <span>contact@hotelmylanlodge.com</span>
               </li>
             </ul>
           </div>
@@ -74,7 +74,7 @@ const Footer = () => {
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400">
-            &copy; {new Date().getFullYear()} Hotel Booking Manager. Tous droits réservés.
+            &copy; {new Date().getFullYear()} Hotel Mylan Lodge. Tous droits réservés.
           </p>
           <div className="mt-4 md:mt-0 flex space-x-4">
             <a href="#" className="text-gray-400 hover:text-white cursor-pointer">Conditions d'utilisation</a>

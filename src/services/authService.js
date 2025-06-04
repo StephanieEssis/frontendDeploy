@@ -1,40 +1,36 @@
-import axios from 'axios';
+import api from './api';
 
-const API_BACKEND = "https://backendlabphase.onrender.com"
-const API_URL = `${API_BACKEND}/api/users`;
+export const authService = {
+  // Connexion
+  login: async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response.data;
+  },
 
-// Inscription utilisateur
-const register = async (userData) => {
-  const response = await axios.post(API_URL + '/register', userData);
-  return response.data;
-};
+  // Inscription
+  register: async (userData) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
 
-// Connexion utilisateur
-const login = async (userData) => {
-  const response = await axios.post(API_URL + '/login', userData);
+  // Déconnexion
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  },
 
-  if (response.data.token) {
-    localStorage.setItem('userToken', response.data.token);
+  // Vérifier si l'utilisateur est connecté
+  isAuthenticated: () => {
+    return !!localStorage.getItem('token');
+  },
+
+  // Récupérer l'utilisateur courant
+  getCurrentUser: () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   }
-
-  return response.data;
 };
-
-// Déconnexion utilisateur
-const logout = () => {
-  localStorage.removeItem('userToken');
-};
-
-// Récupérer le token stocké
-const getToken = () => {
-  return localStorage.getItem('userToken');
-};
-
-const authService = {
-  register,
-  login,
-  logout,
-  getToken,
-};
-
-export default authService;

@@ -1,8 +1,5 @@
-
-
-
 import React, { useState } from 'react';
-import authService from '../../services/authService';
+import { authService } from '../../services/authService';
 
 const RegisterModal = ({ onClose, showLogin }) => {
   const [registerForm, setRegisterForm] = useState({
@@ -12,37 +9,37 @@ const RegisterModal = ({ onClose, showLogin }) => {
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegisterForm(prev => ({ ...prev, [name]: value }));
+    setError(''); // Effacer l'erreur lors de la modification des champs
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
 
-  if (registerForm.password !== registerForm.confirmPassword) {
-    alert('Les mots de passe ne correspondent pas');
-    return;
-  }
+    if (registerForm.password !== registerForm.confirmPassword) {
+      setError('Les mots de passe ne correspondent pas');
+      return;
+    }
 
-  try {
-    await authService.register({
-      fullName: registerForm.fullName,
-      email: registerForm.email,
-      phone: registerForm.phone,
-      password: registerForm.password
-    });
-    
-    alert('Inscription réussie !');
-    onClose();
-    showLogin();
-  } catch (error) {
-    console.error('Erreur inscription:', error);
-    alert('Erreur lors de l’inscription. Veuillez réessayer.');
-  }
-};
-
+    try {
+      await authService.register({
+        fullName: registerForm.fullName,
+        email: registerForm.email,
+        phone: registerForm.phone,
+        password: registerForm.password
+      });
+      
+      onClose();
+      showLogin();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -53,6 +50,13 @@ const handleSubmit = async (e) => {
             <i className="fas fa-times"></i>
           </button>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="fullName">

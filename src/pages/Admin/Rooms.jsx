@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 
 const AdminRooms = () => {
   const [rooms, setRooms] = useState([
-    { id: 1, name: 'Chambre Standard', type: 'standard', price: 89, status: 'disponible' },
-    { id: 2, name: 'Chambre Deluxe', type: 'deluxe', price: 129, status: 'occupée' },
-    { id: 3, name: 'Suite Junior', type: 'suite', price: 189, status: 'maintenance' },
-    { id: 4, name: 'Suite Familiale', type: 'family', price: 219, status: 'disponible' },
+    { id: 1, name: 'Chambre Standard', type: 'standard', price: 75000, status: 'disponible' },
+    { id: 2, name: 'Chambre Deluxe', type: 'deluxe', price: 80000, status: 'occupée' },
+    { id: 3, name: 'Suite Junior', type: 'suite', price: 85000, status: 'maintenance' },
+    { id: 4, name: 'Suite Familiale', type: 'family', price: 95000, status: 'disponible' },
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);

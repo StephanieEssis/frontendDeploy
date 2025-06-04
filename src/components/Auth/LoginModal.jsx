@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import authService from '../../services/authService';
+import { authService } from '../../services/authService';
 
 const LoginModal = ({ onClose, showRegister }) => {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -11,19 +10,18 @@ const LoginModal = ({ onClose, showRegister }) => {
     setLoginForm(prev => ({ ...prev, [name]: value }));
   };
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
       const response = await authService.login(loginForm);
-      console.log(response.message); // ou response.user, etc.
-      // onLoginSuccess({ email: loginForm.email });
-      onClose();
+      if (response.token) {
+        onClose();
+        window.location.reload(); // Recharger la page pour mettre à jour l'état de connexion
+      }
     } catch (err) {
-      console.error(err);
-      setError(err.message || 'Identifiants incorrects ou erreur serveur.');
+      setError(err.response?.data?.message || 'Identifiants incorrects ou erreur serveur.');
     }
   };
 
