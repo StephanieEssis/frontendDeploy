@@ -20,7 +20,7 @@ const Booking = ({ isLoggedIn }) => {
       id: 1,
       name: 'Chambre Standard',
       description: 'Confort essentiel pour un séjour agréable avec lit queen, salle de bain privée et vue sur la ville.',
-      price: 89,
+      price: 80000,
       image: 'https://source.unsplash.com/random/800x600/?hotel,standard',
       amenities: ['Wi-Fi', 'TV', 'Climatisation', 'Sèche-cheveux']
     },
@@ -28,7 +28,7 @@ const Booking = ({ isLoggedIn }) => {
       id: 2,
       name: 'Chambre Deluxe',
       description: 'Espace supplémentaire et commodités premium avec lit king et vue panoramique.',
-      price: 129,
+      price: 80000,
       image: 'https://source.unsplash.com/random/800x600/?hotel,deluxe',
       amenities: ['Wi-Fi', 'TV écran plat', 'Mini-bar', 'Climatisation', 'Salle de bain marbre']
     },
@@ -36,7 +36,7 @@ const Booking = ({ isLoggedIn }) => {
       id: 3,
       name: 'Suite Junior',
       description: 'Séjour luxueux avec salon séparé et chambre spacieuse.',
-      price: 189,
+      price: 85000,
       image: 'https://source.unsplash.com/random/800x600/?hotel,suite',
       amenities: ['Wi-Fi premium', 'TV 55"', 'Espace bureau', 'Service en chambre']
     },
@@ -44,7 +44,7 @@ const Booking = ({ isLoggedIn }) => {
       id: 4,
       name: 'Suite Familiale',
       description: 'Idéal pour les familles avec enfants, comprenant deux chambres séparées.',
-      price: 219,
+      price: 95000,
       image: 'https://source.unsplash.com/random/800x600/?hotel,family',
       amenities: ['Wi-Fi', '2 TV', 'Espace jeu', 'Lit bébé sur demande']
     }
@@ -232,6 +232,7 @@ const Booking = ({ isLoggedIn }) => {
       </div>
     </div>
   );
+
 };
 
 export default Booking;
