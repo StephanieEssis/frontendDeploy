@@ -69,7 +69,7 @@ const Rooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const response = await fetch('https://ton-backend-api.com/api/rooms'); // Remplace par ton URL backend réel
+      const response = await fetch('https://backendlabphase.onrender.com/api/rooms'); // Remplace par ton URL backend réel
       const data = await response.json();
       setRooms(data);
       setLoading(false);
