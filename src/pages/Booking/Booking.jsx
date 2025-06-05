@@ -1,91 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { roomService } from '../../services/roomService';
-
-// const Booking = () => {
-//   const navigate = useNavigate();
-//   const [rooms, setRooms] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const loadRooms = async () => {
-//       try {
-//         setLoading(true);
-//         const data = await roomService.getAllRooms();
-//         setRooms(data);
-//         setError(null);
-//       } catch (err) {
-//         setError('Erreur lors du chargement des chambres');
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     loadRooms();
-//   }, []);
-
-//   if (loading) return <div className="text-center py-8">Chargement...</div>;
-//   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
-
-//   return (
-//     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-//       <h1 className="text-3xl font-bold mb-8">Nos Chambres</h1>
-      
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-//         {rooms.map((room) => (
-//           <div key={room._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-//             <img 
-//               src={room.image} 
-//               alt={room.name} 
-//               className="w-full h-48 object-cover"
-//             />
-//             <div className="p-6">
-//               <h2 className="text-xl font-bold mb-2">{room.name}</h2>
-//               <p className="text-gray-600 mb-4">{room.description}</p>
-              
-//               <div className="mb-4">
-//                 <h3 className="font-semibold mb-2">Équipements :</h3>
-//                 <ul className="grid grid-cols-2 gap-2">
-//                   {room.amenities?.map((item, index) => (
-//                     <li key={index} className="flex items-center text-sm text-gray-600">
-//                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-//                       {item}
-//                     </li>
-//                   ))}
-//                 </ul>
-//               </div>
-
-//               <div className="flex justify-between items-center">
-//                 <div className="text-2xl font-bold text-blue-600">
-//                   {room.price} FCFA <span className="text-sm font-normal text-gray-600">/nuit</span>
-//                 </div>
-//                 <button
-//                   onClick={() => navigate(`/booking/${room._id}`)}
-//                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-300"
-//                 >
-//                   Réserver
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Booking;
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -110,8 +22,8 @@ const Booking = ({ isLoggedIn }) => {
       id: 1,
       name: 'Chambre Standard',
       description: 'Confort essentiel pour un séjour agréable avec lit queen, salle de bain privée et vue sur la ville.',
-      price: 60000,
-      image: 'https://source.unsplash.com/random/800x600/?hotel,standard',
+      price: 75000,
+      image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&h=600&fit=crop',
       amenities: ['Wi-Fi', 'TV', 'Climatisation', 'Sèche-cheveux']
     },
     {
@@ -119,7 +31,7 @@ const Booking = ({ isLoggedIn }) => {
       name: 'Chambre Deluxe',
       description: 'Espace supplémentaire et commodités premium avec lit king et vue panoramique.',
       price: 80000,
-      image: 'https://source.unsplash.com/random/800x600/?hotel,deluxe',
+      image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800&h=600&fit=crop',
       amenities: ['Wi-Fi', 'TV écran plat', 'Mini-bar', 'Climatisation', 'Salle de bain marbre']
     },
     {
@@ -127,15 +39,15 @@ const Booking = ({ isLoggedIn }) => {
       name: 'Suite Junior',
       description: 'Séjour luxueux avec salon séparé et chambre spacieuse.',
       price: 85000,
-      image: 'https://source.unsplash.com/random/800x600/?hotel,suite',
+      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&h=600&fit=crop',
       amenities: ['Wi-Fi premium', 'TV 55"', 'Espace bureau', 'Service en chambre']
     },
     {
       id: 4,
       name: 'Suite Familiale',
       description: 'Idéal pour les familles avec enfants, comprenant deux chambres séparées.',
-      price: 75000,
-      image: 'https://source.unsplash.com/random/800x600/?hotel,family',
+      price: 90000,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop',
       amenities: ['Wi-Fi', '2 TV', 'Espace jeu', 'Lit bébé sur demande']
     }
   ];
@@ -147,11 +59,9 @@ const Booking = ({ isLoggedIn }) => {
       if (selectedRoom) {
         setRoom(selectedRoom);
       } else {
-        // Si id invalide, retourne à la liste
         navigate('/booking');
       }
     } else {
-      // Pas d'id = affichage de la liste, pas de chambre sélectionnée
       setRoom(null);
     }
   }, [id, navigate]);
@@ -180,8 +90,15 @@ const Booking = ({ isLoggedIn }) => {
     navigate('/');
   };
 
+  const handleBookingClick = (roomId) => {
+    if (!isLoggedIn) {
+      alert('Veuillez vous connecter pour effectuer une réservation');
+      return;
+    }
+    navigate(`/booking/${roomId}`);
+  };
+
   if (!id) {
-    // Affichage de la liste des chambres (page /booking)
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-6">Nos Chambres</h1>
@@ -189,25 +106,50 @@ const Booking = ({ isLoggedIn }) => {
           {roomsData.map(roomItem => (
             <div
               key={roomItem.id}
-              className="border rounded-lg p-4 shadow hover:shadow-lg transition cursor-pointer"
-              onClick={() => navigate(`/booking/${roomItem.id}`)}
+              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               <img
                 src={roomItem.image}
                 alt={roomItem.name}
-                className="w-full h-48 object-cover rounded mb-4"
+                className="w-full h-48 object-cover"
               />
-              <h2 className="text-xl font-semibold">{roomItem.name}</h2>
-              <p className="text-gray-600 mb-2">{roomItem.description}</p>
-              <p className="text-blue-600 font-bold">{roomItem.price}FCFA / nuit</p>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-2">{roomItem.name}</h2>
+                <p className="text-gray-600 mb-4">{roomItem.description}</p>
+                
+                <div className="mb-4">
+                  <h3 className="font-semibold mb-2">Équipements :</h3>
+                  <ul className="grid grid-cols-2 gap-2">
+                    {roomItem.amenities.map((item, index) => (
+                      <li key={index} className="flex items-center text-sm text-gray-600">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {roomItem.price} FCFA <span className="text-sm font-normal text-gray-600">/nuit</span>
+                  </div>
+                  <button
+                    onClick={() => handleBookingClick(roomItem.id)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-300 flex items-center"
+                  >
+                    <span>Réserver</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </div>
     );
   }
-
-  // Affichage du détail + réservation d'une chambre (page /booking/:id)
 
   if (!room) return <div className="text-center py-8">Chargement...</div>;
 
@@ -245,7 +187,7 @@ const Booking = ({ isLoggedIn }) => {
 
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="text-2xl font-bold text-blue-700">
-              {room.price} € <span className="text-sm font-normal text-gray-600">/nuit</span>
+              {room.price} FCFA <span className="text-sm font-normal text-gray-600">/nuit</span>
             </p>
           </div>
         </div>
