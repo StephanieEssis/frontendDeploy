@@ -75,6 +75,10 @@ const Booking = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     if (!bookingData.checkIn || !bookingData.checkOut) {
       alert('Veuillez sélectionner les dates d\'arrivée et de départ.');
       return;
@@ -89,6 +93,10 @@ const Booking = () => {
   };
 
   const handleBookingClick = (roomId) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     navigate(`/booking/${roomId}`);
   };
 
