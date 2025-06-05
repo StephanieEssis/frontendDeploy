@@ -4,18 +4,22 @@ import SearchBar from '../../components/Search/SearchBar';
 import RoomList from '../../components/Room/RoomList';
 import StatsCard from '../../components/Stats/StatsCard';
 import BookingChart from '../../components/Stats/BookingChart';
+import { useAppContext } from '../../hooks/useAppContext';
 
-const Home = ({ isLoggedIn, onLogin }) => {
+const Home = () => {
   const navigate = useNavigate();
+  const { user } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
   
-  const handleBookingClick = async () => {
+  const handleBookingClick = () => {
     setIsLoading(true);
     try {
-      if (isLoggedIn) {
+      if (user) {
         navigate('/booking');
       } else {
-        onLogin();
+        alert('Veuillez vous connecter pour effectuer une réservation');
+        // Vous pouvez rediriger vers la page de connexion ou ouvrir une modal
+        navigate('/login');
       }
     } catch (error) {
       console.error('Erreur lors de la redirection:', error);
@@ -51,7 +55,7 @@ const Home = ({ isLoggedIn, onLogin }) => {
       name: 'Suite Familiale',
       description: 'Idéal pour les familles avec enfants',
       price: 90000,
-      image: 'https://readdy.ai/api/search-image?query=A%20spacious%20family%20suite%20hotel%20room%20with%20two%20queen%20beds%20and%20a%20pullout%20sofa%2C%20bright%20and%20cheerful%20decor%2C%20colorful%20accents%2C%20child-friendly%20furnishings%2C%20a%20small%20dining%20area%2C%20large%20windows%20with%20views%2C%20and%20thoughtful%20amenities%20for%20families%20with%20children%20in%20a%20welcoming%20atmosphere&width=600&height=400&seq=4&orientation=landscape'
+      image: 'https://readdy.ai/api/search-image?query=A%20spacious%20family%20suite%20hotel%20room%20with%20two%20queen%20beds%C2%A0and%20a%20pullout%20sofa%2C%20bright%20and%20cheerful%20decor%2C%20colorful%20accents%2C%20child-friendly%20furnishings%2C%20a%20small%20dining%20area%2C%20large%20windows%20with%20views%2C%20and%20thoughtful%20amenities%20for%20families%20with%20children%20in%20a%20welcoming%20atmosphere&width=600&height=400&seq=4&orientation=landscape'
     }
   ];
 
@@ -100,7 +104,7 @@ const Home = ({ isLoggedIn, onLogin }) => {
                   'Réserver maintenant'
                 )}
               </button>
-              {!isLoggedIn && (
+              {!user && (
                 <p className="mt-2 text-sm text-gray-300">
                   Vous devez être connecté pour effectuer une réservation
                 </p>
