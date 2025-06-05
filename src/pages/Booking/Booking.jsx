@@ -2,13 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faUserFriends, faBed, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { useAppContext } from '../../hooks/useAppContext';
+// import { useAppContext } from '../../hooks/useAppContext';
 
 const Booking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAppContext();
+  // const { user } = useAppContext();
 
   const [room, setRoom] = useState(null);
   const [bookingData, setBookingData] = useState({
@@ -75,10 +75,6 @@ const Booking = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!user) {
-      navigate('/login');
-      return;
-    }
     if (!bookingData.checkIn || !bookingData.checkOut) {
       alert('Veuillez sélectionner les dates d\'arrivée et de départ.');
       return;
@@ -93,10 +89,6 @@ const Booking = () => {
   };
 
   const handleBookingClick = (roomId) => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
     navigate(`/booking/${roomId}`);
   };
 

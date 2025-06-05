@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faUserFriends, faBed, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { roomService } from '../../services/roomService';
-import { useAppContext } from '../../hooks/useAppContext';
+// import { roomService } from '../../services/roomService';
+// import { useAppContext } from '../../hooks/useAppContext';
 
 const RoomBooking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAppContext();
+  // const { user } = useAppContext();
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,18 +16,65 @@ const RoomBooking = () => {
     checkIn: '',
     checkOut: '',
     guests: 1,
-    specialRequests: ''
+    specialRequests: '',
+    category: 'standard'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState(null);
+  const [showReceipt, setShowReceipt] = useState(false);
+
+  // Données simulées des chambres
+  const roomsData = useMemo(() => [
+    {
+      id: 1,
+      name: 'Chambre Standard',
+      description: 'Confort essentiel pour un séjour agréable avec lit queen, salle de bain privée et vue sur la ville.',
+      price: 75000,
+      image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi', 'TV', 'Climatisation', 'Sèche-cheveux'],
+      category: 'standard'
+    },
+    {
+      id: 2,
+      name: 'Chambre Deluxe',
+      description: 'Espace supplémentaire et commodités premium avec lit king et vue panoramique.',
+      price: 80000,
+      image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi', 'TV écran plat', 'Mini-bar', 'Climatisation', 'Salle de bain marbre'],
+      category: 'deluxe'
+    },
+    {
+      id: 3,
+      name: 'Suite Junior',
+      description: 'Séjour luxueux avec salon séparé et chambre spacieuse.',
+      price: 85000,
+      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi premium', 'TV 55"', 'Espace bureau', 'Service en chambre'],
+      category: 'suite'
+    },
+    {
+      id: 4,
+      name: 'Suite Familiale',
+      description: 'Idéal pour les familles avec enfants, comprenant deux chambres séparées.',
+      price: 90000,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi', '2 TV', 'Espace jeu', 'Lit bébé sur demande'],
+      category: 'family'
+    }
+  ], []);
 
   useEffect(() => {
     const loadRoom = async () => {
       try {
         setLoading(true);
-        const data = await roomService.getRoomById(id);
-        setRoom(data);
-        setError(null);
+        const roomId = parseInt(id, 10);
+        const selectedRoom = roomsData.find(r => r.id === roomId);
+        if (selectedRoom) {
+          setRoom(selectedRoom);
+          setError(null);
+        } else {
+          setError('Chambre non trouvée');
+        }
       } catch (err) {
         setError('Erreur lors du chargement de la chambre');
         console.error(err);
@@ -37,7 +84,7 @@ const RoomBooking = () => {
     };
 
     loadRoom();
-  }, [id]);
+  }, [id, roomsData]);
 
   const validateDates = () => {
     const today = new Date();
@@ -67,12 +114,6 @@ const RoomBooking = () => {
     e.preventDefault();
     setBookingError(null);
 
-    // Validation de l'utilisateur
-    if (!user) {
-      setBookingError('Veuillez vous connecter pour effectuer une réservation');
-      return;
-    }
-
     // Validation des dates
     const dateError = validateDates();
     if (dateError) {
@@ -85,23 +126,22 @@ const RoomBooking = () => {
       const response = await fetch('https://backendlabphase.onrender.com/api/reservations', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           roomId: id,
           checkIn: bookingData.checkIn,
           checkOut: bookingData.checkOut,
           guests: parseInt(bookingData.guests),
-          specialRequests: bookingData.specialRequests
+          specialRequests: bookingData.specialRequests,
+          category: bookingData.category
         })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert("Réservation confirmée !");
-        navigate('/');
+        setShowReceipt(true);
       } else {
         setBookingError(data.message || 'Erreur lors de la réservation');
       }
@@ -113,12 +153,95 @@ const RoomBooking = () => {
     }
   };
 
+  // Calculer le nombre de nuits
+  const calculateNights = () => {
+    if (!bookingData.checkIn || !bookingData.checkOut) return 0;
+    const checkIn = new Date(bookingData.checkIn);
+    const checkOut = new Date(bookingData.checkOut);
+    const diffTime = Math.abs(checkOut - checkIn);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  // Calculer le prix total
+  const calculateTotal = () => {
+    const nights = calculateNights();
+    return room ? room.price * nights : 0;
+  };
+
   if (loading) return <div className="text-center py-8">Chargement...</div>;
   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
   if (!room) return <div className="text-center py-8">Chambre non trouvée</div>;
 
+  // Composant du reçu
+  const Receipt = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg p-8 max-w-lg w-full">
+        <h2 className="text-2xl font-bold mb-6 text-center">Récapitulatif de Réservation</h2>
+        <div className="space-y-4">
+          <div className="border-b pb-4">
+            <h3 className="font-semibold text-lg">{room.name}</h3>
+            <p className="text-gray-600">{room.description}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="font-semibold">Date d'arrivée</p>
+              <p>{new Date(bookingData.checkIn).toLocaleDateString()}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Date de départ</p>
+              <p>{new Date(bookingData.checkOut).toLocaleDateString()}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Nombre de nuits</p>
+              <p>{calculateNights()}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Nombre de personnes</p>
+              <p>{bookingData.guests}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Catégorie</p>
+              <p className="capitalize">{bookingData.category}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Prix par nuit</p>
+              <p>{room.price} FCFA</p>
+            </div>
+          </div>
+          <div className="border-t pt-4">
+            <p className="font-bold text-xl">Total: {calculateTotal()} FCFA</p>
+          </div>
+          {bookingData.specialRequests && (
+            <div className="border-t pt-4">
+              <p className="font-semibold">Demandes spéciales</p>
+              <p className="text-gray-600">{bookingData.specialRequests}</p>
+            </div>
+          )}
+        </div>
+        <div className="mt-8 flex justify-end space-x-4">
+          <button
+            onClick={() => setShowReceipt(false)}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+          >
+            Fermer
+          </button>
+          <button
+            onClick={() => {
+              setShowReceipt(false);
+              navigate('/');
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retour à l'accueil
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {showReceipt && <Receipt />}
       <button 
         onClick={() => navigate(-1)}
         className="flex items-center text-blue-600 mb-6"
@@ -166,6 +289,24 @@ const RoomBooking = () => {
           )}
 
           <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">
+                <FontAwesomeIcon icon={faBed} className="mr-2" />
+                Catégorie de chambre
+              </label>
+              <select
+                name="category"
+                value={bookingData.category}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              >
+                <option value="standard">Standard</option>
+                <option value="deluxe">Deluxe</option>
+                <option value="suite">Suite</option>
+                <option value="family">Familiale</option>
+              </select>
+            </div>
+
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">
                 <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" />

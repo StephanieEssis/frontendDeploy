@@ -4,13 +4,13 @@ import SearchBar from '../../components/Search/SearchBar';
 import RoomList from '../../components/Room/RoomList';
 import StatsCard from '../../components/Stats/StatsCard';
 import BookingChart from '../../components/Stats/BookingChart';
-import { useAppContext } from '../../hooks/useAppContext';
+// import { useAppContext } from '../../hooks/useAppContext';
 import LoginModal from '../../components/Auth/LoginModal';
 import RegisterModal from '../../components/Auth/RegisterModal';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user } = useAppContext();
+  // const { user } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -53,11 +53,7 @@ const Home = () => {
   const handleBookingClick = () => {
     setIsLoading(true);
     try {
-      if (user) {
-        navigate('/booking');
-      } else {
-        setShowLoginModal(true);
-      }
+      navigate('/booking');
     } catch (error) {
       console.error('Erreur lors de la redirection:', error);
     } finally {

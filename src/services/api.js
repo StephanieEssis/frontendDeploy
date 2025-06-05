@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_URL = 'https://backendlabphase.onrender.com/api';
 
+console.log('API URL:', API_URL); // Pour déboguer
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {

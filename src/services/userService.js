@@ -4,10 +4,22 @@ export const userService = {
   // Connexion utilisateur
   login: async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const requestData = { email, password };
+      console.log('Login request data:', requestData);
+      console.log('Full API URL:', `${api.defaults.baseURL}/auth/login`);
+      
+      const response = await api.post('/auth/login', requestData);
+      console.log('Login response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error('Error during login:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.url,
+        headers: error.config?.headers,
+        method: error.config?.method
+      });
       throw error;
     }
   },
