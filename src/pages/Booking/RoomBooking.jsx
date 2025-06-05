@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faUserFriends, faBed, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faUserFriends, faBed, faArrowLeft, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons';
 // import { roomService } from '../../services/roomService';
 // import { useAppContext } from '../../hooks/useAppContext';
 
@@ -17,7 +17,10 @@ const RoomBooking = () => {
     checkOut: '',
     guests: 1,
     specialRequests: '',
-    category: 'standard'
+    category: 'standard',
+    email: '',
+    firstName: '',
+    lastName: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState(null);
@@ -123,28 +126,39 @@ const RoomBooking = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch('https://backendlabphase.onrender.com/api/reservations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          roomId: id,
-          checkIn: bookingData.checkIn,
-          checkOut: bookingData.checkOut,
-          guests: parseInt(bookingData.guests),
-          specialRequests: bookingData.specialRequests,
-          category: bookingData.category
-        })
-      });
+      
+      // Simulation d'une réservation réussie
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simuler un délai de 1 seconde
+      
+      // Afficher le reçu
+      setShowReceipt(true);
+      
+      // Enregistrer la réservation dans le localStorage pour la persistance
+      const reservation = {
+        id: `RES-${Date.now().toString().slice(-6)}`,
+        roomId: id,
+        roomName: room.name,
+        firstName: bookingData.firstName,
+        lastName: bookingData.lastName,
+        checkIn: bookingData.checkIn,
+        checkOut: bookingData.checkOut,
+        guests: bookingData.guests,
+        category: bookingData.category,
+        email: bookingData.email,
+        specialRequests: bookingData.specialRequests,
+        total: calculateTotal(),
+        date: new Date().toISOString()
+      };
 
-      const data = await response.json();
+      // Récupérer les réservations existantes ou créer un tableau vide
+      const existingReservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+      
+      // Ajouter la nouvelle réservation
+      existingReservations.push(reservation);
+      
+      // Sauvegarder dans le localStorage
+      localStorage.setItem('reservations', JSON.stringify(existingReservations));
 
-      if (response.ok) {
-        setShowReceipt(true);
-      } else {
-        setBookingError(data.message || 'Erreur lors de la réservation');
-      }
     } catch (error) {
       console.error('Erreur lors de la réservation:', error);
       setBookingError("Une erreur est survenue lors de la réservation");
@@ -173,71 +187,109 @@ const RoomBooking = () => {
   if (!room) return <div className="text-center py-8">Chambre non trouvée</div>;
 
   // Composant du reçu
-  const Receipt = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-8 max-w-lg w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Récapitulatif de Réservation</h2>
-        <div className="space-y-4">
-          <div className="border-b pb-4">
-            <h3 className="font-semibold text-lg">{room.name}</h3>
-            <p className="text-gray-600">{room.description}</p>
+  const Receipt = () => {
+    // Générer un numéro de réservation unique
+    const reservationNumber = `RES-${Date.now().toString().slice(-6)}`;
+    const currentDate = new Date().toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg p-8 max-w-lg w-full">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-blue-600">Reçu de Réservation</h2>
+            <p className="text-gray-600 mt-2">Numéro de réservation: {reservationNumber}</p>
+            <p className="text-gray-600">Date: {currentDate}</p>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="font-semibold">Date d'arrivée</p>
-              <p>{new Date(bookingData.checkIn).toLocaleDateString()}</p>
+
+          <div className="border-2 border-blue-100 rounded-lg p-6 mb-6">
+            <div className="border-b border-blue-100 pb-4 mb-4">
+              <h3 className="font-semibold text-lg text-blue-800">{room.name}</h3>
+              <p className="text-gray-600">{room.description}</p>
             </div>
-            <div>
-              <p className="font-semibold">Date de départ</p>
-              <p>{new Date(bookingData.checkOut).toLocaleDateString()}</p>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p className="font-semibold text-gray-700">Client</p>
+                <p className="text-gray-600">{bookingData.firstName} {bookingData.lastName}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Email</p>
+                <p className="text-gray-600">{bookingData.email}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Catégorie</p>
+                <p className="text-gray-600 capitalize">{bookingData.category}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Date d'arrivée</p>
+                <p className="text-gray-600">{new Date(bookingData.checkIn).toLocaleDateString('fr-FR')}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Date de départ</p>
+                <p className="text-gray-600">{new Date(bookingData.checkOut).toLocaleDateString('fr-FR')}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Nombre de nuits</p>
+                <p className="text-gray-600">{calculateNights()}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Nombre de personnes</p>
+                <p className="text-gray-600">{bookingData.guests}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700">Prix par nuit</p>
+                <p className="text-gray-600">{room.price.toLocaleString()} FCFA</p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold">Nombre de nuits</p>
-              <p>{calculateNights()}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Nombre de personnes</p>
-              <p>{bookingData.guests}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Catégorie</p>
-              <p className="capitalize">{bookingData.category}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Prix par nuit</p>
-              <p>{room.price} FCFA</p>
+
+            <div className="border-t border-blue-100 pt-4">
+              <div className="flex justify-between items-center">
+                <p className="font-semibold text-gray-700">Total</p>
+                <p className="font-bold text-xl text-blue-600">{calculateTotal().toLocaleString()} FCFA</p>
+              </div>
             </div>
           </div>
-          <div className="border-t pt-4">
-            <p className="font-bold text-xl">Total: {calculateTotal()} FCFA</p>
-          </div>
+
           {bookingData.specialRequests && (
-            <div className="border-t pt-4">
-              <p className="font-semibold">Demandes spéciales</p>
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <p className="font-semibold text-gray-700 mb-2">Demandes spéciales</p>
               <p className="text-gray-600">{bookingData.specialRequests}</p>
             </div>
           )}
-        </div>
-        <div className="mt-8 flex justify-end space-x-4">
-          <button
-            onClick={() => setShowReceipt(false)}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800"
-          >
-            Fermer
-          </button>
-          <button
-            onClick={() => {
-              setShowReceipt(false);
-              navigate('/');
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Retour à l'accueil
-          </button>
+
+          <div className="bg-blue-50 p-4 rounded-lg mb-6">
+            <p className="text-sm text-blue-800">
+              Merci de votre réservation ! Un email de confirmation vous sera envoyé avec tous les détails.
+            </p>
+          </div>
+
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={() => setShowReceipt(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Fermer
+            </button>
+            <button
+              onClick={() => {
+                setShowReceipt(false);
+                navigate('/');
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Retour à l'accueil
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -289,6 +341,55 @@ const RoomBooking = () => {
           )}
 
           <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">
+                  <FontAwesomeIcon icon={faUser} className="mr-2" />
+                  Prénom
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={bookingData.firstName}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  required
+                  placeholder="Votre prénom"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">
+                  <FontAwesomeIcon icon={faUser} className="mr-2" />
+                  Nom
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={bookingData.lastName}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  required
+                  placeholder="Votre nom"
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">
+                <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={bookingData.email}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+                required
+                placeholder="votre@email.com"
+              />
+            </div>
+
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">
                 <FontAwesomeIcon icon={faBed} className="mr-2" />
