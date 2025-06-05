@@ -14,16 +14,21 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    extensions: ['.js', '.jsx'] // Ajoutez cette ligne si absente
+    extensions: ['.js', '.jsx', '.json']
   },
   server: {
+    port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // Assurez-vous que c'est le port de votre backend
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true
   }
 });

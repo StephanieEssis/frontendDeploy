@@ -4,8 +4,16 @@ import * as echarts from 'echarts';
 const BookingChart = () => {
   useEffect(() => {
     const chartDom = document.getElementById('bookingChart');
+    let myChart = null;
+
     if (chartDom) {
-      const myChart = echarts.init(chartDom);
+      // Détruire l'instance existante si elle existe
+      const existingChart = echarts.getInstanceByDom(chartDom);
+      if (existingChart) {
+        existingChart.dispose();
+      }
+
+      myChart = echarts.init(chartDom);
       const option = {
         animation: false,
         title: {
@@ -57,6 +65,13 @@ const BookingChart = () => {
       };
       myChart.setOption(option);
     }
+
+    // Nettoyage lors du démontage du composant
+    return () => {
+      if (myChart) {
+        myChart.dispose();
+      }
+    };
   }, []);
 
   return <div id="bookingChart" style={{ width: '100%', height: '400px' }}></div>;

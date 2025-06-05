@@ -1,25 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/Search/SearchBar';
 import RoomList from '../../components/Room/RoomList';
 import StatsCard from '../../components/Stats/StatsCard';
 import BookingChart from '../../components/Stats/BookingChart';
 import { useAppContext } from '../../hooks/useAppContext';
+import LoginModal from '../../components/Auth/LoginModal';
+import RegisterModal from '../../components/Auth/RegisterModal';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   
+  const roomsData = useMemo(() => [
+    {
+      id: 1,
+      name: 'Chambre Standard',
+      description: 'Confort essentiel pour un séjour agréable avec lit queen, salle de bain privée et vue sur la ville.',
+      price: 75000,
+      image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi', 'TV', 'Climatisation', 'Sèche-cheveux']
+    },
+    {
+      id: 2,
+      name: 'Chambre Deluxe',
+      description: 'Espace supplémentaire et commodités premium avec lit king et vue panoramique.',
+      price: 80000,
+      image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi', 'TV écran plat', 'Mini-bar', 'Climatisation', 'Salle de bain marbre']
+    },
+    {
+      id: 3,
+      name: 'Suite Junior',
+      description: 'Séjour luxueux avec salon séparé et chambre spacieuse.',
+      price: 85000,
+      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi premium', 'TV 55"', 'Espace bureau', 'Service en chambre']
+    },
+    {
+      id: 4,
+      name: 'Suite Familiale',
+      description: 'Idéal pour les familles avec enfants, comprenant deux chambres séparées.',
+      price: 90000,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop',
+      amenities: ['Wi-Fi', '2 TV', 'Espace jeu', 'Lit bébé sur demande']
+    }
+  ], []);
+
   const handleBookingClick = () => {
     setIsLoading(true);
     try {
       if (user) {
         navigate('/booking');
       } else {
-        alert('Veuillez vous connecter pour effectuer une réservation');
-        // Vous pouvez rediriger vers la page de connexion ou ouvrir une modal
-        navigate('/login');
+        setShowLoginModal(true);
       }
     } catch (error) {
       console.error('Erreur lors de la redirection:', error);
@@ -28,54 +65,11 @@ const Home = () => {
     }
   };
 
-  const roomCategories = [
-    {
-      id: 1,
-      name: 'Chambre Standard',
-      description: 'Confort essentiel pour un séjour agréable',
-      price: 75000,
-      image: 'https://readdy.ai/api/search-image?query=A%20modern%20standard%20hotel%20room%20with%20a%20comfortable%20queen%20bed%2C%20clean%20white%20linens%2C%20minimalist%20decor%2C%20soft%20lighting%2C%20a%20small%20desk%20area%2C%20and%20a%20window%20with%20city%20views.%20The%20room%20has%20neutral%20colors%2C%20wooden%20accents%2C%20and%20appears%20spacious%20and%20inviting&width=600&height=400&seq=1&orientation=landscape'
-    },
-    {
-      id: 2,
-      name: 'Chambre Deluxe',
-      description: 'Espace supplémentaire et commodités premium',
-      price: 80000,
-      image: 'https://readdy.ai/api/search-image?query=A%20luxurious%20deluxe%20hotel%20room%20with%20a%20king-size%20bed%2C%20premium%20bedding%2C%20elegant%20furniture%2C%20rich%20color%20palette%20with%20gold%20accents%2C%20plush%20carpet%2C%20large%20windows%20with%20panoramic%20views%2C%20sophisticated%20lighting%20fixtures%2C%20and%20a%20spacious%20seating%20area%20with%20comfortable%20armchairs&width=600&height=400&seq=2&orientation=landscape'
-    },
-    {
-      id: 3,
-      name: 'Suite Junior',
-      description: 'Séjour luxueux avec salon séparé',
-      price: 85000,
-      image: 'https://readdy.ai/api/search-image?query=A%20spacious%20junior%20suite%20hotel%20room%20with%20separated%20living%20area%20and%20bedroom%20space%2C%20featuring%20a%20king%20bed%2C%20elegant%20sofa%20and%20coffee%20table%2C%20modern%20decor%20with%20tasteful%20artwork%2C%20large%20windows%20with%20city%20views%2C%20ambient%20lighting%2C%20and%20premium%20furnishings%20in%20neutral%20tones%20with%20subtle%20color%20accents&width=600&height=400&seq=3&orientation=landscape'
-    },
-    {
-      id: 4,
-      name: 'Suite Familiale',
-      description: 'Idéal pour les familles avec enfants',
-      price: 90000,
-      image: 'https://readdy.ai/api/search-image?query=A%20spacious%20family%20suite%20hotel%20room%20with%20two%20queen%20beds%C2%A0and%20a%20pullout%20sofa%2C%20bright%20and%20cheerful%20decor%2C%20colorful%20accents%2C%20child-friendly%20furnishings%2C%20a%20small%20dining%20area%2C%20large%20windows%20with%20views%2C%20and%20thoughtful%20amenities%20for%20families%20with%20children%20in%20a%20welcoming%20atmosphere&width=600&height=400&seq=4&orientation=landscape'
-    }
-  ];
-
-  const handleSearch = (searchParams) => {
-    console.log('Search parameters:', searchParams);
-    // Ici vous ajouterez la logique de recherche
-  };
-
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-[500px] overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://readdy.ai/api/search-image?query=A%20luxurious%20hotel%20lobby%20with%20elegant%20modern%20design%2C%20featuring%20a%20grand%20reception%20desk%2C%20marble%20floors%2C%20stylish%20seating%20areas%2C%20sophisticated%20lighting%20fixtures%2C%20and%20large%20windows%20allowing%20natural%20light%20to%20illuminate%20the%20space.%20The%20atmosphere%20is%20welcoming%20yet%20upscale%20with%20a%20warm%20color%20palette&width=1440&height=500&seq=5&orientation=landscape"
-            alt="Hotel Lobby"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-70"></div>
-        </div>
+      <section className="relative h-[600px] bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80")' }}>
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="max-w-lg">
             <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
@@ -104,29 +98,26 @@ const Home = () => {
                   'Réserver maintenant'
                 )}
               </button>
-              {!user && (
-                <p className="mt-2 text-sm text-gray-300">
-                  Vous devez être connecté pour effectuer une réservation
-                </p>
-              )}
             </div>
           </div>
         </div>
       </section>
 
-      <SearchBar onSearch={handleSearch} />
-
-      {/* Room Categories */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Nos Catégories de Chambres
-          </h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Découvrez nos différentes catégories de chambres conçues pour répondre à tous vos besoins et préférences.
-          </p>
+      {/* Search Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SearchBar />
         </div>
-        <RoomList rooms={roomCategories} />
+      </section>
+
+      {/* Rooms Section */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-12">
+            Nos Chambres
+          </h2>
+          <RoomList rooms={roomsData} />
+        </div>
       </section>
 
       {/* Statistics Section */}
@@ -151,6 +142,26 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Modals */}
+      {showLoginModal && (
+        <LoginModal 
+          onClose={() => setShowLoginModal(false)} 
+          showRegister={() => {
+            setShowLoginModal(false);
+            setShowRegisterModal(true);
+          }}
+        />
+      )}
+      {showRegisterModal && (
+        <RegisterModal 
+          onClose={() => setShowRegisterModal(false)} 
+          showLogin={() => {
+            setShowRegisterModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
     </>
   );
 };

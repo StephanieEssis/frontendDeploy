@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faUserFriends, faBed, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useAppContext } from '../../hooks/useAppContext';
 
-const Booking = ({ isLoggedIn }) => {
+const Booking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAppContext();
 
   const [room, setRoom] = useState(null);
   const [bookingData, setBookingData] = useState({
@@ -17,7 +19,7 @@ const Booking = ({ isLoggedIn }) => {
   });
 
   // Données simulées des chambres
-  const roomsData = [
+  const roomsData = useMemo(() => [
     {
       id: 1,
       name: 'Chambre Standard',
@@ -50,7 +52,7 @@ const Booking = ({ isLoggedIn }) => {
       image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop',
       amenities: ['Wi-Fi', '2 TV', 'Espace jeu', 'Lit bébé sur demande']
     }
-  ];
+  ], []);
 
   useEffect(() => {
     if (id) {
@@ -64,7 +66,7 @@ const Booking = ({ isLoggedIn }) => {
     } else {
       setRoom(null);
     }
-  }, [id, navigate]);
+  }, [id, navigate, roomsData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,10 +75,6 @@ const Booking = ({ isLoggedIn }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      alert('Veuillez vous connecter pour effectuer une réservation');
-      return;
-    }
     if (!bookingData.checkIn || !bookingData.checkOut) {
       alert('Veuillez sélectionner les dates d\'arrivée et de départ.');
       return;
@@ -91,10 +89,6 @@ const Booking = ({ isLoggedIn }) => {
   };
 
   const handleBookingClick = (roomId) => {
-    if (!isLoggedIn) {
-      alert('Veuillez vous connecter pour effectuer une réservation');
-      return;
-    }
     navigate(`/booking/${roomId}`);
   };
 

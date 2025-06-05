@@ -4,7 +4,7 @@ export const userService = {
   // Connexion utilisateur
   login: async (email, password) => {
     try {
-      const response = await api.post('/users/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       return response.data;
     } catch (error) {
       console.error('Error during login:', error);
@@ -15,7 +15,7 @@ export const userService = {
   // Inscription utilisateur
   register: async (userData) => {
     try {
-      const response = await api.post('/users/register', userData);
+      const response = await api.post('/auth/register', userData);
       return response.data;
     } catch (error) {
       console.error('Error during registration:', error);
@@ -26,7 +26,7 @@ export const userService = {
   // Récupérer l'utilisateur courant
   getCurrentUser: async () => {
     try {
-      const response = await api.get('/users/me');
+      const response = await api.get('/auth/me');
       return response.data;
     } catch (error) {
       console.error('Error fetching current user:', error);
@@ -37,7 +37,7 @@ export const userService = {
   // Mettre à jour le profil utilisateur
   updateProfile: async (userData) => {
     try {
-      const response = await api.put('/users/profile', userData);
+      const response = await api.put('/auth/profile', userData);
       return response.data;
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -48,7 +48,7 @@ export const userService = {
   // Changer le mot de passe
   changePassword: async (currentPassword, newPassword) => {
     try {
-      const response = await api.put('/users/password', {
+      const response = await api.put('/auth/password', {
         currentPassword,
         newPassword
       });
